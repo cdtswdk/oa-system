@@ -1,0 +1,7 @@
+common\mapper\TkMapper.class
+common\utils\CookieUtils.class
+common\utils\JsonUtils.class
+common\mapper\Mapper.class
+common\pojo\PageResult.class
+common\utils\NumberUtils.class
+common\utils\IdWorker.class
