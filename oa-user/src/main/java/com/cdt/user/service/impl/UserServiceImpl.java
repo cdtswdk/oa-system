@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
                 if ("admin".equals(loginname)) {
                     hashMap.put("admin", "admin-token," + loginname);
                 } else {
-                    hashMap.put("editor", "editor-token");
+                    hashMap.put("editor", "editor-token," + loginname);
                 }
                 singleToken.setTokenMap(hashMap);
                 userInf1.setSingleToken(singleToken);
@@ -90,20 +90,63 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DataResult<UserInf> userLogout() {
-        return DataResult.success(null,"登出成功");
+        return DataResult.success(null, "登出成功");
     }
 
     @Override
     public DataResult<UserInf> getPerInf(String loginname) {
         Example example = new Example(UserInf.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("loginname",loginname);
+        criteria.andEqualTo("loginname", loginname);
         List<UserInf> userInfList = this.userMapper.selectByExample(example);
 
-        if(CollectionUtils.isNotEmpty(userInfList)){
-            return DataResult.success(userInfList.get(0),"查询成功");
+        if (CollectionUtils.isNotEmpty(userInfList)) {
+            return DataResult.success(userInfList.get(0), "查询成功");
         }
-
         return DataResult.notfound("查询失败");
+    }
+
+    @Override
+    public DataResult<UserInf> updateUserInf(UserInf userInf) {
+        try {
+            this.userMapper.updateByPrimaryKeySelective(userInf);
+            return DataResult.success(userInf, "修改成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("修改失败");
+    }
+
+    @Override
+    public DataResult<UserInf> updatePassword(String loginname, String prePassword, String newPassword, String cfmPassword) {
+        Example example = new Example(UserInf.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("loginname", loginname);
+        List<UserInf> userInfList = this.userMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(userInfList)) {
+            UserInf userInf = userInfList.get(0);
+            if (!prePassword.equals(userInf.getPassword())) {
+                return DataResult.serverError("密码输入不正确");
+            }
+            if (!newPassword.equals(cfmPassword)) {
+                return DataResult.serverError("两次密码输入不一致");
+            }
+            userInf.setPassword(newPassword);
+            this.userMapper.updateByPrimaryKey(userInf);
+            return DataResult.success(userInf, "修改成功");
+        }
+        return DataResult.notfound("查询不到该用户");
+    }
+
+    @Override
+    public DataResult<UserInf> registerUserInf(UserInf userInf) {
+        try {
+            userInf.setStatus(1);
+            this.userMapper.insertSelective(userInf);
+            return DataResult.success(userInf, "注册成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("注册失败");
     }
 }

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="oa-model" />
         <module name="oa-common" />
+        <module name="oa-dept" />
         <module name="oa-user" />
         <module name="generatorSqlmapCustom" />
       </profile>
@@ -19,6 +20,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="generatorSqlmapCustom" options="-parameters" />
       <module name="oa-common" options="-parameters" />
+      <module name="oa-dept" options="-parameters" />
       <module name="oa-model" options="-parameters" />
       <module name="oa-user" options="-parameters" />
     </option>

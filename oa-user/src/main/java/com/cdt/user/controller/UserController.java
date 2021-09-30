@@ -4,10 +4,7 @@ import com.cdt.common.pojo.DataResult;
 import com.cdt.model.UserInf;
 import com.cdt.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Auther: chendongtao
@@ -45,6 +42,23 @@ public class UserController {
     @RequestMapping(value = "/perInf", method = RequestMethod.GET)
     public DataResult<UserInf> getPerInf(String loginname) {
         return this.userService.getPerInf(loginname);
+    }
+
+    @RequestMapping(value = "/updateUserInf", method = RequestMethod.POST)
+    public DataResult<UserInf> updateUserInf(UserInf userInf) {
+        return this.userService.updateUserInf(userInf);
+    }
+
+    @RequestMapping(value = "/updatePwd", method = RequestMethod.POST)
+    public DataResult<UserInf> updatePwd(String loginname,
+                                         String prePassword, String newPassword,
+                                         String cfmPassword) {
+        return this.userService.updatePassword(loginname, prePassword, newPassword, cfmPassword);
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public DataResult<UserInf> register(UserInf userInf) {
+        return this.userService.registerUserInf(userInf);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)

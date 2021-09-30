@@ -1,5 +1,5 @@
 server:
-  port: 8181
+  port: 8182
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource #Druid连接池
@@ -8,7 +8,7 @@ spring:
     password: root #数据库密码
     driver-class-name: com.mysql.jdbc.Driver #mysql驱动
 mybatis:
-  type-aliases-package: com.cdt.user.mapper
+  type-aliases-package: com.cdt.dept.mapper
   mapper-locations: classpath:/mapper/*.xml
   # 驼峰命名规范 如：数据库字段是  order_id 那么 实体字段就要写成 orderId
   configuration:

@@ -13,6 +13,7 @@
         <module>oa-common</module>
         <module>generatorSqlmapCustom</module>
         <module>oa-model</module>
+        <module>oa-dept</module>
     </modules>
 
     <parent>

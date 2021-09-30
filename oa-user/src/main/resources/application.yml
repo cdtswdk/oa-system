@@ -3,12 +3,12 @@ server:
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource #Druid连接池
-    url: jdbc:mysql://localhost:3306/oadb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/oadb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
     username: root #数据库用户名
     password: root #数据库密码
     driver-class-name: com.mysql.jdbc.Driver #mysql驱动
 mybatis:
-  type-aliases-package: com.cdt.user.domain
+  type-aliases-package: com.cdt.user.mapper
   mapper-locations: classpath:/mapper/*.xml
   # 驼峰命名规范 如：数据库字段是  order_id 那么 实体字段就要写成 orderId
   configuration:
