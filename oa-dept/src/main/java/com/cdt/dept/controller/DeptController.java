@@ -33,7 +33,7 @@ public class DeptController {
         return this.deptService.getDeptList(datatableInfo);
     }
 
-    @RequestMapping(value = "/deleteDept/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteDept/{id}", method = RequestMethod.POST)
     public DataResult<DeptInf> deleteDept(@PathVariable("id") Integer id) {
         return this.deptService.deleteDeptById(id);
     }
@@ -41,5 +41,10 @@ public class DeptController {
     @RequestMapping(value = "/editDept", method = RequestMethod.POST)
     public DataResult<DeptInf> editDept(DeptInf deptInf) {
         return this.deptService.editDept(deptInf);
+    }
+
+    @RequestMapping(value = "/addDept", method = RequestMethod.POST)
+    public DataResult<DeptInf> addDept(DeptInf deptInf) {
+        return this.deptService.addDept(deptInf);
     }
 }

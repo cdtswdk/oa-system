@@ -14,6 +14,7 @@
         <module>generatorSqlmapCustom</module>
         <module>oa-model</module>
         <module>oa-dept</module>
+        <module>oa-employ</module>
     </modules>
 
     <parent>

@@ -7,11 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="oa-model" />
+        <module name="oa-user" />
+        <module name="oa-employ" />
+        <module name="generatorSqlmapCustom" />
         <module name="oa-common" />
         <module name="oa-dept" />
-        <module name="oa-user" />
-        <module name="generatorSqlmapCustom" />
+        <module name="oa-model" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8" />
@@ -21,6 +22,7 @@
       <module name="generatorSqlmapCustom" options="-parameters" />
       <module name="oa-common" options="-parameters" />
       <module name="oa-dept" options="-parameters" />
+      <module name="oa-employ" options="-parameters" />
       <module name="oa-model" options="-parameters" />
       <module name="oa-user" options="-parameters" />
     </option>

@@ -14,4 +14,6 @@ public interface DeptService {
     DataResult<DeptInf> deleteDeptById(Integer id);
 
     DataResult<DeptInf> editDept(DeptInf deptInf);
+
+    DataResult<DeptInf> addDept(DeptInf deptInf);
 }

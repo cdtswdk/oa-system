@@ -1,11 +1,11 @@
-package com.cdt.dept.service.impl;
+package com.cdt.employ.service.impl;
 
 import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
-import com.cdt.dept.mapper.DeptMapper;
-import com.cdt.dept.service.DeptService;
-import com.cdt.model.DeptInf;
+import com.cdt.employ.mapper.EmployMapper;
+import com.cdt.employ.service.EmployService;
+import com.cdt.model.EmployeeInf;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,27 +19,27 @@ import java.util.List;
  * @Description:
  */
 @Service
-public class DeptServiceImpl implements DeptService {
+public class EmployServiceImpl implements EmployService {
 
     @Autowired
-    private DeptMapper deptMapper;
+    private EmployMapper employMapper;
 
     @Override
-    public DeptInf findDeptById(int id) {
-        return this.deptMapper.selectByPrimaryKey(id);
+    public EmployeeInf findEmployById(int id) {
+        return this.employMapper.selectByPrimaryKey(id);
     }
 
     @Override
-    public DataResult<PageResult<DeptInf>> getDeptList(DatatableInfo<DeptInf> datatableInfo) {
+    public DataResult<PageResult<EmployeeInf>> getEmployList(DatatableInfo<EmployeeInf> datatableInfo) {
         try {
-            Example example = new Example(DeptInf.class);
+            Example example = new Example(EmployeeInf.class);
             Example.Criteria criteria = example.createCriteria();
             PageHelper.startPage(datatableInfo.getOffset(), datatableInfo.getPageSize());
-            List<DeptInf> deptInfs = this.deptMapper.selectAll();
-            PageResult<DeptInf> pageResult = new PageResult<>();
+            List<EmployeeInf> deptInfs = this.employMapper.selectAll();
+            PageResult<EmployeeInf> pageResult = new PageResult<>();
             pageResult.setItems(deptInfs);
             pageResult.setTotal((long) deptInfs.size());
-            pageResult.setTotalPage(this.deptMapper.selectCountByExample(example));
+            pageResult.setTotalPage(this.employMapper.selectCountByExample(example));
             return DataResult.success(pageResult, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,9 +48,9 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> deleteDeptById(Integer id) {
+    public DataResult<EmployeeInf> deleteEmployById(Integer id) {
         try {
-            int count = this.deptMapper.deleteByPrimaryKey(id);
+            int count = this.employMapper.deleteByPrimaryKey(id);
             if (count > 0) {
                 return DataResult.success(null, "删除成功");
             }
@@ -61,9 +61,9 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> editDept(DeptInf deptInf) {
+    public DataResult<EmployeeInf> editEmploy(EmployeeInf employeeInf) {
         try {
-            int count = this.deptMapper.updateByPrimaryKeySelective(deptInf);
+            int count = this.employMapper.updateByPrimaryKeySelective(employeeInf);
             if (count > 0) {
                 return DataResult.success(null, "修改成功");
             }
@@ -74,9 +74,9 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> addDept(DeptInf deptInf) {
+    public DataResult<EmployeeInf> addEmploy(EmployeeInf employeeInf) {
         try {
-            int count = this.deptMapper.insert(deptInf);
+            int count = this.employMapper.insert(employeeInf);
             if(count > 0){
                 return DataResult.success(null,"增加成功");
             }
