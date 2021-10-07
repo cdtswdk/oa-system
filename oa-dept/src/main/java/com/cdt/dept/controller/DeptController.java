@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Auther: chendongtao
  * @Date: 2021/9/26 15:06
@@ -28,9 +30,19 @@ public class DeptController {
         return "hello";
     }
 
+    @RequestMapping(value = "/deptInfo/{id}")
+    public DataResult<DeptInf> getDeptInfo(@PathVariable("id") int id){
+        return this.deptService.findDeptById(id);
+    }
+
     @RequestMapping(value = "/getList", method = RequestMethod.GET)
-    public DataResult<PageResult<DeptInf>> getDeptList(DatatableInfo<DeptInf> datatableInfo) {
-        return this.deptService.getDeptList(datatableInfo);
+    public DataResult<List<DeptInf>> getDeptList() {
+        return this.deptService.getDeptList();
+    }
+
+    @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
+    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo) {
+        return this.deptService.getDeptListByPage(datatableInfo);
     }
 
     @RequestMapping(value = "/deleteDept/{id}", method = RequestMethod.POST)

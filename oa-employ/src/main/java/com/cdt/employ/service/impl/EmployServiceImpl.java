@@ -25,12 +25,31 @@ public class EmployServiceImpl implements EmployService {
     private EmployMapper employMapper;
 
     @Override
-    public EmployeeInf findEmployById(int id) {
-        return this.employMapper.selectByPrimaryKey(id);
+    public DataResult<EmployeeInf> findEmployById(int id) {
+        try {
+            EmployeeInf employeeInf = this.employMapper.selectByPrimaryKey(id);
+            if (employeeInf != null) {
+                return DataResult.success(employeeInf, "查询成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.notfound("查询失败");
     }
 
     @Override
-    public DataResult<PageResult<EmployeeInf>> getEmployList(DatatableInfo<EmployeeInf> datatableInfo) {
+    public DataResult<List<EmployeeInf>> getEmployList() {
+        try {
+            List<EmployeeInf> employeeInfs = this.employMapper.selectAll();
+            return DataResult.success(employeeInfs,"查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
+    }
+
+    @Override
+    public DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo) {
         try {
             Example example = new Example(EmployeeInf.class);
             Example.Criteria criteria = example.createCriteria();
@@ -77,8 +96,8 @@ public class EmployServiceImpl implements EmployService {
     public DataResult<EmployeeInf> addEmploy(EmployeeInf employeeInf) {
         try {
             int count = this.employMapper.insert(employeeInf);
-            if(count > 0){
-                return DataResult.success(null,"增加成功");
+            if (count > 0) {
+                return DataResult.success(null, "增加成功");
             }
         } catch (Exception e) {
             e.printStackTrace();

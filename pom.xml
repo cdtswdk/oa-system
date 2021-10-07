@@ -15,6 +15,7 @@
         <module>oa-model</module>
         <module>oa-dept</module>
         <module>oa-employ</module>
+        <module>oa-job</module>
     </modules>
 
     <parent>

@@ -1,11 +1,11 @@
-package com.cdt.dept.service.impl;
+package com.cdt.job.service.impl;
 
 import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
-import com.cdt.dept.mapper.DeptMapper;
-import com.cdt.dept.service.DeptService;
-import com.cdt.model.DeptInf;
+import com.cdt.job.mapper.JobMapper;
+import com.cdt.job.service.JobService;
+import com.cdt.model.JobInf;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,16 +19,18 @@ import java.util.List;
  * @Description:
  */
 @Service
-public class DeptServiceImpl implements DeptService {
+public class JobServiceImpl implements JobService {
 
     @Autowired
-    private DeptMapper deptMapper;
+    private JobMapper jobMapper;
 
     @Override
-    public DataResult<DeptInf> findDeptById(int id) {
+    public DataResult<JobInf> findJobById(int id) {
         try {
-            DeptInf deptInf = this.deptMapper.selectByPrimaryKey(id);
-            return DataResult.success(deptInf,"查询成功");
+            JobInf jobInf = this.jobMapper.selectByPrimaryKey(id);
+            if (jobInf != null) {
+                return DataResult.success(jobInf, "查询成功");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,10 +38,10 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<List<DeptInf>> getDeptList() {
+    public DataResult<List<JobInf>> getJobList() {
         try {
-            List<DeptInf> deptInfs = this.deptMapper.selectAll();
-            return DataResult.success(deptInfs,"查询成功");
+            List<JobInf> jobInfs = this.jobMapper.selectAll();
+            return DataResult.success(jobInfs,"查询成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,16 +49,15 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo) {
+    public DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo) {
         try {
-            Example example = new Example(DeptInf.class);
-            Example.Criteria criteria = example.createCriteria();
+            Example example = new Example(JobInf.class);
             PageHelper.startPage(datatableInfo.getOffset(), datatableInfo.getPageSize());
-            List<DeptInf> deptInfs = this.deptMapper.selectAll();
-            PageResult<DeptInf> pageResult = new PageResult<>();
-            pageResult.setItems(deptInfs);
-            pageResult.setTotal((long) deptInfs.size());
-            pageResult.setTotalPage(this.deptMapper.selectCountByExample(example));
+            List<JobInf> jobInfs = this.jobMapper.selectAll();
+            PageResult<JobInf> pageResult = new PageResult<>();
+            pageResult.setItems(jobInfs);
+            pageResult.setTotal((long) jobInfs.size());
+            pageResult.setTotalPage(this.jobMapper.selectCountByExample(example));
             return DataResult.success(pageResult, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,9 +66,9 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> deleteDeptById(Integer id) {
+    public DataResult<JobInf> deleteJobById(Integer id) {
         try {
-            int count = this.deptMapper.deleteByPrimaryKey(id);
+            int count = this.jobMapper.deleteByPrimaryKey(id);
             if (count > 0) {
                 return DataResult.success(null, "删除成功");
             }
@@ -78,9 +79,9 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> editDept(DeptInf deptInf) {
+    public DataResult<JobInf> editJob(JobInf jobInf) {
         try {
-            int count = this.deptMapper.updateByPrimaryKeySelective(deptInf);
+            int count = this.jobMapper.updateByPrimaryKeySelective(jobInf);
             if (count > 0) {
                 return DataResult.success(null, "修改成功");
             }
@@ -91,11 +92,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<DeptInf> addDept(DeptInf deptInf) {
+    public DataResult<JobInf> addJob(JobInf jobInf) {
         try {
-            int count = this.deptMapper.insert(deptInf);
-            if(count > 0){
-                return DataResult.success(null,"增加成功");
+            int count = this.jobMapper.insert(jobInf);
+            if (count > 0) {
+                return DataResult.success(null, "增加成功");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="oa-user" />
+        <module name="oa-job" />
         <module name="oa-employ" />
         <module name="generatorSqlmapCustom" />
         <module name="oa-common" />
@@ -23,6 +24,7 @@
       <module name="oa-common" options="-parameters" />
       <module name="oa-dept" options="-parameters" />
       <module name="oa-employ" options="-parameters" />
+      <module name="oa-job" options="-parameters" />
       <module name="oa-model" options="-parameters" />
       <module name="oa-user" options="-parameters" />
     </option>

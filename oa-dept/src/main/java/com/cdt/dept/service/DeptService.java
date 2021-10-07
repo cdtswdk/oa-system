@@ -5,11 +5,15 @@ import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
 import com.cdt.model.DeptInf;
 
+import java.util.List;
+
 public interface DeptService {
 
-    DeptInf findDeptById(int id);
+    DataResult<DeptInf> findDeptById(int id);
 
-    DataResult<PageResult<DeptInf>> getDeptList(DatatableInfo<DeptInf> datatableInfo);
+    DataResult<List<DeptInf>> getDeptList();
+
+    DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo);
 
     DataResult<DeptInf> deleteDeptById(Integer id);
 
