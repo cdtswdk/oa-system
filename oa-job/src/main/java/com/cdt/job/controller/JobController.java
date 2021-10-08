@@ -41,8 +41,9 @@ public class JobController {
     }
 
     @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
-    public DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo) {
-        return this.jobService.getJobListByPage(datatableInfo);
+    public DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo,
+                                                           String searchType,String searchInput) {
+        return this.jobService.getJobListByPage(datatableInfo,searchType,searchInput);
     }
 
     @RequestMapping(value = "/deleteJob/{id}", method = RequestMethod.POST)

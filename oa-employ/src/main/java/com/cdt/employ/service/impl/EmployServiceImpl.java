@@ -7,6 +7,7 @@ import com.cdt.employ.mapper.EmployMapper;
 import com.cdt.employ.service.EmployService;
 import com.cdt.model.EmployeeInf;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -41,7 +42,7 @@ public class EmployServiceImpl implements EmployService {
     public DataResult<List<EmployeeInf>> getEmployList() {
         try {
             List<EmployeeInf> employeeInfs = this.employMapper.selectAll();
-            return DataResult.success(employeeInfs,"查询成功");
+            return DataResult.success(employeeInfs, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,16 +50,30 @@ public class EmployServiceImpl implements EmployService {
     }
 
     @Override
-    public DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo) {
+    public DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo, String searchType, String searchInput) {
         try {
             Example example = new Example(EmployeeInf.class);
             Example.Criteria criteria = example.createCriteria();
-            PageHelper.startPage(datatableInfo.getOffset(), datatableInfo.getPageSize());
-            List<EmployeeInf> deptInfs = this.employMapper.selectAll();
+            if (StringUtils.isNotEmpty(searchInput)) {
+                if (StringUtils.isNotEmpty(searchType)) {
+                    if ("1".equals(searchType)) {
+                        criteria.andLike("name", "%" + searchInput + "%");
+                    } else if ("2".equals(searchType)) {
+                        criteria.andLike("sex", "%" + searchInput + "%");
+                    } else if ("3".equals(searchType)) {
+                        criteria.andLike("deptId", "%" + searchInput + "%");
+                    } else if ("4".equals(searchType)) {
+                        criteria.andLike("jobId", "%" + searchInput + "%");
+                    }
+                }
+            }
+            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
+            List<EmployeeInf> employeeInfs = this.employMapper.selectByExample(example);
             PageResult<EmployeeInf> pageResult = new PageResult<>();
-            pageResult.setItems(deptInfs);
-            pageResult.setTotal((long) deptInfs.size());
-            pageResult.setTotalPage(this.employMapper.selectCountByExample(example));
+            pageResult.setItems(employeeInfs);
+            List<EmployeeInf> employeeInfList = this.employMapper.selectByExample(example);
+            pageResult.setTotal((long) employeeInfList.size());
+            pageResult.setTotalPage((int) Math.ceil((double) employeeInfList.size() / datatableInfo.getPageSize()));
             return DataResult.success(pageResult, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();

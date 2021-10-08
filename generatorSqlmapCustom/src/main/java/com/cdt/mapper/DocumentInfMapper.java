@@ -2,8 +2,9 @@ package com.cdt.mapper;
 
 import com.cdt.model.DocumentInf;
 import com.cdt.model.DocumentInfExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface DocumentInfMapper {
     int countByExample(DocumentInfExample example);

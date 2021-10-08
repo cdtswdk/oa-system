@@ -13,7 +13,7 @@ public interface JobService {
 
     DataResult<List<JobInf>> getJobList();
 
-    DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo);
+    DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo, String searchType, String searchInput);
 
     DataResult<JobInf> deleteJobById(Integer id);
 

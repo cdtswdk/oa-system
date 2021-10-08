@@ -18,7 +18,7 @@ import java.util.Map;
 @ToString
 public class SingleToken {
     private String token;
-    private Map<String,String> tokenMap;
+    private Map<String, String> tokenMap;
 
     private String[] roles;
     private String introduction;

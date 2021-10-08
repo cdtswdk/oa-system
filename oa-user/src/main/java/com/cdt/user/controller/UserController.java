@@ -1,10 +1,17 @@
 package com.cdt.user.controller;
 
 import com.cdt.common.pojo.DataResult;
+import com.cdt.common.pojo.DatatableInfo;
+import com.cdt.common.pojo.PageResult;
 import com.cdt.model.UserInf;
 import com.cdt.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @Auther: chendongtao
@@ -24,9 +31,19 @@ public class UserController {
     }
 
     @RequestMapping(value = "/findUser/{id}")
-    public UserInf getUser(@PathVariable(value = "id") int id) {
-        System.out.println(this.userService.findUserById(id));
+    public DataResult<UserInf> getUser(@PathVariable(value = "id") int id) {
         return this.userService.findUserById(id);
+    }
+
+    @RequestMapping(value = "/getUserList", method = RequestMethod.GET)
+    public DataResult<List<UserInf>> getUserList() {
+        return this.userService.getUserList();
+    }
+
+    @RequestMapping(value = "/getUserListByPage", method = RequestMethod.GET)
+    public DataResult<PageResult<UserInf>> getUserListByPage(DatatableInfo<UserInf> datatableInfo,
+                                                             String searchType, String searchInput) {
+        return this.userService.getUserListByPage(datatableInfo, searchType, searchInput);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -54,6 +71,16 @@ public class UserController {
                                          String prePassword, String newPassword,
                                          String cfmPassword) {
         return this.userService.updatePassword(loginname, prePassword, newPassword, cfmPassword);
+    }
+
+    @RequestMapping(value = "/deleteUser/{id}", method = RequestMethod.POST)
+    public DataResult<UserInf> deleteUser(@PathVariable("id") Integer id) {
+        return this.userService.deleteUserById(id);
+    }
+
+    @RequestMapping(value = "/editUser", method = RequestMethod.POST)
+    public DataResult<UserInf> editUser(UserInf userInf) {
+        return this.userService.editUser(userInf);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)

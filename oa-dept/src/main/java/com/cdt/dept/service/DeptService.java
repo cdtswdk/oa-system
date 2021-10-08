@@ -13,7 +13,7 @@ public interface DeptService {
 
     DataResult<List<DeptInf>> getDeptList();
 
-    DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo);
+    DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo, String searchType, String searchInput);
 
     DataResult<DeptInf> deleteDeptById(Integer id);
 

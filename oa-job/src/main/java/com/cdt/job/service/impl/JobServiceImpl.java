@@ -7,6 +7,7 @@ import com.cdt.job.mapper.JobMapper;
 import com.cdt.job.service.JobService;
 import com.cdt.model.JobInf;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -41,7 +42,7 @@ public class JobServiceImpl implements JobService {
     public DataResult<List<JobInf>> getJobList() {
         try {
             List<JobInf> jobInfs = this.jobMapper.selectAll();
-            return DataResult.success(jobInfs,"查询成功");
+            return DataResult.success(jobInfs, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,15 +50,26 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo) {
+    public DataResult<PageResult<JobInf>> getJobListByPage(DatatableInfo<JobInf> datatableInfo, String searchType, String searchInput) {
         try {
             Example example = new Example(JobInf.class);
-            PageHelper.startPage(datatableInfo.getOffset(), datatableInfo.getPageSize());
-            List<JobInf> jobInfs = this.jobMapper.selectAll();
+            Example.Criteria criteria = example.createCriteria();
+            if (StringUtils.isNotEmpty(searchInput)) {
+                if (StringUtils.isNotEmpty(searchType)) {
+                    if ("1".equals(searchType)) {
+                        criteria.andLike("name", "%" + searchInput + "%");
+                    } else if ("2".equals(searchType)) {
+                        criteria.andLike("remark", "%" + searchInput + "%");
+                    }
+                }
+            }
+            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
+            List<JobInf> jobInfs = this.jobMapper.selectByExample(example);
             PageResult<JobInf> pageResult = new PageResult<>();
             pageResult.setItems(jobInfs);
-            pageResult.setTotal((long) jobInfs.size());
-            pageResult.setTotalPage(this.jobMapper.selectCountByExample(example));
+            List<JobInf> jobInfList = this.jobMapper.selectByExample(example);
+            pageResult.setTotal((long) jobInfList.size());
+            pageResult.setTotalPage((int) Math.ceil((double) jobInfList.size() / datatableInfo.getPageSize()));
             return DataResult.success(pageResult, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();

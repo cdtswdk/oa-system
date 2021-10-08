@@ -4,21 +4,20 @@ package com.cdt.common.pojo;
 import java.io.Serializable;
 
 /**
- *
- * @author  pandora gen
  * @param <T>
+ * @author pandora gen
  */
 public class DataResult<T> implements Serializable {
     private static final long serialVersionUID = -1954065564856833013L;
     /**
-     *  返回码0 -> 成功,401 -> 没有权限,404 -> 查询的对象不存在,408 -> 请求超时,500 -> 未知错误  201~250 -> 业务自定义返回码
+     * 返回码0 -> 成功,401 -> 没有权限,404 -> 查询的对象不存在,408 -> 请求超时,500 -> 未知错误  201~250 -> 业务自定义返回码
      */
     private int code = 0;
     /**
      * 提示语
      */
     private String message = "";
-     /**
+    /**
      * 返回数据
      */
     private T data;
@@ -43,6 +42,7 @@ public class DataResult<T> implements Serializable {
         result.setCode(RespCode.TIMEOUT.getCode()).setMessage(message);
         return result;
     }
+
     public static <T> DataResult<T> notfound(String message) {
         DataResult<T> result = new DataResult<>();
         result.setCode(RespCode.NOTFOUND.getCode()).setMessage(message);
@@ -57,7 +57,6 @@ public class DataResult<T> implements Serializable {
     }
 
 
-
     public int getCode() {
         return this.code;
     }
@@ -66,8 +65,6 @@ public class DataResult<T> implements Serializable {
         this.code = code;
         return this;
     }
-
-
 
 
     public String getMessage() {

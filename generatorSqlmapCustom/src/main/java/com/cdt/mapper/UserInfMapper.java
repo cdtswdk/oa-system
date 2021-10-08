@@ -2,8 +2,9 @@ package com.cdt.mapper;
 
 import com.cdt.model.UserInf;
 import com.cdt.model.UserInfExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface UserInfMapper {
     int countByExample(UserInfExample example);

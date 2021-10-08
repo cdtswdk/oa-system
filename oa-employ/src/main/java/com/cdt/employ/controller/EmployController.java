@@ -41,8 +41,9 @@ public class EmployController {
     }
 
     @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
-    public DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo) {
-        return this.employService.getEmployListByPage(datatableInfo);
+    public DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo,
+                                                                   String searchType, String searchInput) {
+        return this.employService.getEmployListByPage(datatableInfo, searchType, searchInput);
     }
 
     @RequestMapping(value = "/deleteEmploy/{id}", method = RequestMethod.POST)

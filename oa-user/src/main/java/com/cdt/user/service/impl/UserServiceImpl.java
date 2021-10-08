@@ -1,11 +1,15 @@
 package com.cdt.user.service.impl;
 
 import com.cdt.common.pojo.DataResult;
+import com.cdt.common.pojo.DatatableInfo;
+import com.cdt.common.pojo.PageResult;
 import com.cdt.model.SingleToken;
 import com.cdt.model.UserInf;
 import com.cdt.user.mapper.UserMapper;
 import com.cdt.user.service.UserService;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -25,8 +29,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public UserInf findUserById(int id) {
-        return this.userMapper.selectByPrimaryKey(id);
+    public DataResult<UserInf> findUserById(int id) {
+        try {
+            UserInf userInf = this.userMapper.selectByPrimaryKey(id);
+            return DataResult.success(userInf, "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
     }
 
     @Override
@@ -148,5 +158,72 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return DataResult.serverError("注册失败");
+    }
+
+    @Override
+    public DataResult<List<UserInf>> getUserList() {
+        try {
+            List<UserInf> userInfList = this.userMapper.selectAll();
+            return DataResult.success(userInfList, "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
+    }
+
+    @Override
+    public DataResult<PageResult<UserInf>> getUserListByPage(DatatableInfo<UserInf> datatableInfo, String searchType, String searchInput) {
+        try {
+            Example example = new Example(UserInf.class);
+            Example.Criteria criteria = example.createCriteria();
+            if (StringUtils.isNotEmpty(searchInput)) {
+                if (StringUtils.isNotEmpty(searchType)) {
+                    if ("1".equals(searchType)) {
+                        criteria.andLike("loginname", "%" + searchInput + "%");
+                    } else if ("2".equals(searchType)) {
+                        criteria.andLike("status", "%" + searchInput + "%");
+                    } else if ("3".equals(searchType)) {
+                        criteria.andLike("username", "%" + searchInput + "%");
+                    }
+                }
+            }
+            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
+            List<UserInf> userInfList = this.userMapper.selectByExample(example);
+            PageResult<UserInf> pageResult = new PageResult<>();
+            pageResult.setItems(userInfList);
+            List<UserInf> userInfList1 = this.userMapper.selectByExample(example);
+            pageResult.setTotal((long) userInfList1.size());
+            pageResult.setTotalPage((int) Math.ceil((double) userInfList1.size() / datatableInfo.getPageSize()));
+            return DataResult.success(pageResult, "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
+    }
+
+    @Override
+    public DataResult<UserInf> deleteUserById(Integer id) {
+        try {
+            int count = this.userMapper.deleteByPrimaryKey(id);
+            if (count > 0) {
+                return DataResult.success(null, "删除成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("删除失败");
+    }
+
+    @Override
+    public DataResult<UserInf> editUser(UserInf userInf) {
+        try {
+            int count = this.userMapper.updateByPrimaryKeySelective(userInf);
+            if (count > 0) {
+                return DataResult.success(null, "修改成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("修改失败");
     }
 }

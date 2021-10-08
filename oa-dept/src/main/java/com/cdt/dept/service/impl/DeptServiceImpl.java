@@ -7,6 +7,7 @@ import com.cdt.dept.mapper.DeptMapper;
 import com.cdt.dept.service.DeptService;
 import com.cdt.model.DeptInf;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -28,7 +29,7 @@ public class DeptServiceImpl implements DeptService {
     public DataResult<DeptInf> findDeptById(int id) {
         try {
             DeptInf deptInf = this.deptMapper.selectByPrimaryKey(id);
-            return DataResult.success(deptInf,"查询成功");
+            return DataResult.success(deptInf, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,7 +40,7 @@ public class DeptServiceImpl implements DeptService {
     public DataResult<List<DeptInf>> getDeptList() {
         try {
             List<DeptInf> deptInfs = this.deptMapper.selectAll();
-            return DataResult.success(deptInfs,"查询成功");
+            return DataResult.success(deptInfs, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,16 +48,26 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo) {
+    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo, String searchType, String searchInput) {
         try {
             Example example = new Example(DeptInf.class);
             Example.Criteria criteria = example.createCriteria();
-            PageHelper.startPage(datatableInfo.getOffset(), datatableInfo.getPageSize());
-            List<DeptInf> deptInfs = this.deptMapper.selectAll();
+            if (StringUtils.isNotEmpty(searchInput)) {
+                if (StringUtils.isNotEmpty(searchType)) {
+                    if ("1".equals(searchType)) {
+                        criteria.andLike("name", "%" + searchInput + "%");
+                    } else if ("2".equals(searchType)) {
+                        criteria.andLike("remark", "%" + searchInput + "%");
+                    }
+                }
+            }
+            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
+            List<DeptInf> deptInfs = this.deptMapper.selectByExample(example);
             PageResult<DeptInf> pageResult = new PageResult<>();
             pageResult.setItems(deptInfs);
-            pageResult.setTotal((long) deptInfs.size());
-            pageResult.setTotalPage(this.deptMapper.selectCountByExample(example));
+            List<DeptInf> deptInfList = this.deptMapper.selectByExample(example);
+            pageResult.setTotal((long) deptInfList.size());
+            pageResult.setTotalPage((int) Math.ceil((double) deptInfList.size() / datatableInfo.getPageSize()));
             return DataResult.success(pageResult, "查询成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,8 +105,8 @@ public class DeptServiceImpl implements DeptService {
     public DataResult<DeptInf> addDept(DeptInf deptInf) {
         try {
             int count = this.deptMapper.insert(deptInf);
-            if(count > 0){
-                return DataResult.success(null,"增加成功");
+            if (count > 0) {
+                return DataResult.success(null, "增加成功");
             }
         } catch (Exception e) {
             e.printStackTrace();

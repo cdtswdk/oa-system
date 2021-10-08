@@ -13,7 +13,7 @@ public interface EmployService {
 
     DataResult<List<EmployeeInf>> getEmployList();
 
-    DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo);
+    DataResult<PageResult<EmployeeInf>> getEmployListByPage(DatatableInfo<EmployeeInf> datatableInfo, String searchType, String searchInput);
 
     DataResult<EmployeeInf> deleteEmployById(Integer id);
 

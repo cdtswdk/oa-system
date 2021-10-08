@@ -2,8 +2,9 @@ package com.cdt.mapper;
 
 import com.cdt.model.JobInf;
 import com.cdt.model.JobInfExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface JobInfMapper {
     int countByExample(JobInfExample example);

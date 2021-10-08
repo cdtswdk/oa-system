@@ -31,7 +31,7 @@ public class DeptController {
     }
 
     @RequestMapping(value = "/deptInfo/{id}")
-    public DataResult<DeptInf> getDeptInfo(@PathVariable("id") int id){
+    public DataResult<DeptInf> getDeptInfo(@PathVariable("id") int id) {
         return this.deptService.findDeptById(id);
     }
 
@@ -41,8 +41,9 @@ public class DeptController {
     }
 
     @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
-    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo) {
-        return this.deptService.getDeptListByPage(datatableInfo);
+    public DataResult<PageResult<DeptInf>> getDeptListByPage(DatatableInfo<DeptInf> datatableInfo,
+                                                             String searchType, String searchInput) {
+        return this.deptService.getDeptListByPage(datatableInfo, searchType, searchInput);
     }
 
     @RequestMapping(value = "/deleteDept/{id}", method = RequestMethod.POST)

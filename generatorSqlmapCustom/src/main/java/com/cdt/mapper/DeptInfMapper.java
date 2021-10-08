@@ -2,8 +2,9 @@ package com.cdt.mapper;
 
 import com.cdt.model.DeptInf;
 import com.cdt.model.DeptInfExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface DeptInfMapper {
     int countByExample(DeptInfExample example);

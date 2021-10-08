@@ -49,6 +49,7 @@ public class DatatableInfo<T> {
     }
 
     public int getOffset() {
+        System.out.println(this.page);
         return (this.page - 1) * this.pageSize;
     }
 
