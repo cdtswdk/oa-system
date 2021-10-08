@@ -17,7 +17,7 @@ logging:
   level:
     com:
       cdt:
-        user:
+        dept:
           mapper:
             debug
 pagehelper:
