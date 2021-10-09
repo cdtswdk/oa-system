@@ -1,15 +1,14 @@
 package com.cdt.user.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
 import com.cdt.model.UserInf;
 import com.cdt.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -84,7 +83,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public DataResult<UserInf> register(UserInf userInf) {
+    public DataResult<UserInf> register(@RequestParam(required = false, name = "file") MultipartFile file,
+                                        @RequestParam(name = "registerUser", required = false) String registerUser) {
+        UserInf userInf = JSONObject.parseObject(registerUser, UserInf.class);
+        if (file != null) {
+            System.out.println("filename " + file.getName());
+            System.out.println("OriginalFilename " + file.getOriginalFilename());
+            System.out.println("ContentType " + file.getContentType());
+            userInf.setImgname(file.getOriginalFilename());
+        }
         return this.userService.registerUserInf(userInf);
     }
 

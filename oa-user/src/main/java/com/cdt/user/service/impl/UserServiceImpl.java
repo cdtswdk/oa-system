@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public DataResult<UserInf> registerUserInf(UserInf userInf) {
         try {
-            userInf.setStatus(1);
+            userInf.setStatus(0);
             this.userMapper.insertSelective(userInf);
             return DataResult.success(userInf, "注册成功");
         } catch (Exception e) {
