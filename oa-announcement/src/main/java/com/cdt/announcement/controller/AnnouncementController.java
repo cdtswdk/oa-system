@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class AnnouncementController {
 
     @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
     public DataResult<PageResult<AnnouncementInfo>> getAnnouncementListByPage(DatatableInfo<AnnouncementInfo> datatableInfo,
-                                                             String searchType, String searchInput) {
+                                                                              String searchType, String searchInput) {
         return this.announcementService.getAnnouncementListByPage(datatableInfo, searchType, searchInput);
     }
 
@@ -52,12 +53,12 @@ public class AnnouncementController {
     }
 
     @RequestMapping(value = "/editAnnouncement", method = RequestMethod.POST)
-    public DataResult<AnnouncementInfo> editAnnouncement(AnnouncementInfo announcementInfo) {
-        return this.announcementService.editAnnouncement(announcementInfo);
+    public DataResult<AnnouncementInfo> editAnnouncement(HttpServletRequest request, AnnouncementInfo announcementInfo) {
+        return this.announcementService.editAnnouncement(request, announcementInfo);
     }
 
     @RequestMapping(value = "/addAnnouncement", method = RequestMethod.POST)
-    public DataResult<AnnouncementInfo> addAnnouncement(AnnouncementInfo announcementInfo) {
-        return this.announcementService.addAnnouncement(announcementInfo);
+    public DataResult<AnnouncementInfo> addAnnouncement(HttpServletRequest request, AnnouncementInfo announcementInfo) {
+        return this.announcementService.addAnnouncement(request, announcementInfo);
     }
 }

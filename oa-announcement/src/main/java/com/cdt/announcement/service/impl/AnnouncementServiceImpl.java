@@ -1,17 +1,22 @@
 package com.cdt.announcement.service.impl;
 
 import com.cdt.announcement.mapper.AnnouncementMapper;
+import com.cdt.announcement.mapper.UserMapper;
 import com.cdt.announcement.service.AnnouncementService;
 import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
 import com.cdt.model.AnnouncementInfo;
+import com.cdt.model.UserInf;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +29,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     @Autowired
     private AnnouncementMapper announcementMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public DataResult<AnnouncementInfo> findAnnouncementById(int id) {
@@ -55,12 +63,13 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             if (StringUtils.isNotEmpty(searchInput)) {
                 if (StringUtils.isNotEmpty(searchType)) {
                     if ("1".equals(searchType)) {
-                        criteria.andLike("name", "%" + searchInput + "%");
+                        criteria.andLike("title", "%" + searchInput + "%");
                     } else if ("2".equals(searchType)) {
-                        criteria.andLike("remark", "%" + searchInput + "%");
+                        criteria.andLike("content", "%" + searchInput + "%");
                     }
                 }
             }
+            example.setOrderByClause(" createtime desc ");
             PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
             List<AnnouncementInfo> AnnouncementInfos = this.announcementMapper.selectByExample(example);
             PageResult<AnnouncementInfo> pageResult = new PageResult<>();
@@ -89,9 +98,22 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public DataResult<AnnouncementInfo> editAnnouncement(AnnouncementInfo AnnouncementInfo) {
+    public DataResult<AnnouncementInfo> editAnnouncement(HttpServletRequest request, AnnouncementInfo announcementInfo) {
         try {
-            int count = this.announcementMapper.updateByPrimaryKeySelective(AnnouncementInfo);
+            String header = request.getHeader("X-Token");
+            String loginname = header.split(",")[1];
+            Example example = new Example(UserInf.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("loginname", loginname);
+            List<UserInf> userInfList = this.userMapper.selectByExample(example);
+            UserInf userInf = null;
+            if (CollectionUtils.isNotEmpty(userInfList)) {
+                userInf = userInfList.get(0);
+                announcementInfo.setUid(userInf.getId());
+            } else {
+                announcementInfo.setUid(-1);
+            }
+            int count = this.announcementMapper.updateByPrimaryKeySelective(announcementInfo);
             if (count > 0) {
                 return DataResult.success(null, "修改成功");
             }
@@ -102,9 +124,23 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public DataResult<AnnouncementInfo> addAnnouncement(AnnouncementInfo AnnouncementInfo) {
+    public DataResult<AnnouncementInfo> addAnnouncement(HttpServletRequest request, AnnouncementInfo announcementInfo) {
         try {
-            int count = this.announcementMapper.insert(AnnouncementInfo);
+            String header = request.getHeader("X-Token");
+            String loginname = header.split(",")[1];
+            Example example = new Example(UserInf.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("loginname", loginname);
+            List<UserInf> userInfList = this.userMapper.selectByExample(example);
+            UserInf userInf = null;
+            if (CollectionUtils.isNotEmpty(userInfList)) {
+                userInf = userInfList.get(0);
+                announcementInfo.setUid(userInf.getId());
+            } else {
+                announcementInfo.setUid(-1);
+            }
+            announcementInfo.setCreatetime(new Date());
+            int count = this.announcementMapper.insert(announcementInfo);
             if (count > 0) {
                 return DataResult.success(null, "增加成功");
             }

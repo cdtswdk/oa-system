@@ -5,6 +5,7 @@ import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
 import com.cdt.model.AnnouncementInfo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface AnnouncementService {
@@ -17,7 +18,7 @@ public interface AnnouncementService {
 
     DataResult<AnnouncementInfo> deleteAnnouncementById(Integer id);
 
-    DataResult<AnnouncementInfo> editAnnouncement(AnnouncementInfo AnnouncementInfo);
+    DataResult<AnnouncementInfo> editAnnouncement(HttpServletRequest request, AnnouncementInfo AnnouncementInfo);
 
-    DataResult<AnnouncementInfo> addAnnouncement(AnnouncementInfo AnnouncementInfo);
+    DataResult<AnnouncementInfo> addAnnouncement(HttpServletRequest request, AnnouncementInfo AnnouncementInfo);
 }

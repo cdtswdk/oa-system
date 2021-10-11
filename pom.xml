@@ -17,6 +17,7 @@
         <module>oa-employ</module>
         <module>oa-job</module>
         <module>oa-announcement</module>
+        <module>oa-document</module>
     </modules>
 
     <parent>
