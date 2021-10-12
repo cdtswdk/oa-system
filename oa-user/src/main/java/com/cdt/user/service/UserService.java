@@ -5,6 +5,7 @@ import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
 import com.cdt.model.UserInf;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface UserService {
 
     DataResult<UserInf> updatePassword(String loginname, String prePassword, String newPassword, String cfmPassword);
 
-    DataResult<UserInf> registerUserInf(UserInf userInf);
+    DataResult<UserInf> registerUserInf(MultipartFile file, UserInf userInf);
 
     DataResult<List<UserInf>> getUserList();
 
@@ -31,5 +32,5 @@ public interface UserService {
 
     DataResult<UserInf> deleteUserById(Integer id);
 
-    DataResult<UserInf> editUser(UserInf userInf);
+    DataResult<UserInf> editUser(MultipartFile file, UserInf userInf);
 }

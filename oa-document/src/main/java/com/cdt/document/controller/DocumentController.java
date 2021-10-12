@@ -1,5 +1,6 @@
 package com.cdt.document.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cdt.common.pojo.DataResult;
 import com.cdt.common.pojo.DatatableInfo;
 import com.cdt.common.pojo.PageResult;
@@ -51,12 +52,16 @@ public class DocumentController {
     }
 
     @RequestMapping(value = "/editDocument", method = RequestMethod.POST)
-    public DataResult<DocumentInf> editDocument(DocumentInf DocumentInf) {
-        return this.documentService.editDocument(DocumentInf);
+    public DataResult<DocumentInf> editDocument(HttpServletRequest request,
+                                                @RequestParam(required = false, name = "file") MultipartFile file,
+                                                @RequestParam(name = "editFile") String editFile) {
+        DocumentInf documentInf = JSONObject.parseObject(editFile, DocumentInf.class);
+        return this.documentService.editDocument(request, file, documentInf);
     }
 
     @RequestMapping(value = "/addDocument", method = RequestMethod.POST)
-    public DataResult<DocumentInf> addDocument(HttpServletRequest request, @RequestParam(name = "file") MultipartFile file) {
+    public DataResult<DocumentInf> addDocument(HttpServletRequest request,
+                                               @RequestParam(name = "file") MultipartFile file) {
         return this.documentService.addDocument(request, file);
     }
 }

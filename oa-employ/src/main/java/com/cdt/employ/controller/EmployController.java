@@ -51,28 +51,18 @@ public class EmployController {
     }
 
     @RequestMapping(value = "/editEmploy", method = RequestMethod.POST)
-    public DataResult<EmployeeInf> editEmploy(@RequestParam(name = "file") MultipartFile file,
+    public DataResult<EmployeeInf> editEmploy(@RequestParam(required = false, name = "file") MultipartFile file,
                                               @RequestParam(name = "editEmployee") String editEmployee) {
         EmployeeInf employeeInf = JSONObject.parseObject(editEmployee, EmployeeInf.class);
-        if(file!=null){
-            System.out.println("filename " + file.getName());
-            System.out.println("OriginalFilename " + file.getOriginalFilename());
-            System.out.println("ContentType " + file.getContentType());
-            employeeInf.setImgname(file.getOriginalFilename());
-        }
-        return this.employService.editEmploy(employeeInf);
+
+        return this.employService.editEmploy(file, employeeInf);
     }
 
     @RequestMapping(value = "/addEmploy", method = RequestMethod.POST)
     public DataResult<EmployeeInf> addEmploy(@RequestParam(name = "file") MultipartFile file,
                                              @RequestParam(name = "addEmployee") String addEmployee) {
         EmployeeInf employeeInf = JSONObject.parseObject(addEmployee, EmployeeInf.class);
-        if(file!=null){
-            System.out.println("filename " + file.getName());
-            System.out.println("OriginalFilename " + file.getOriginalFilename());
-            System.out.println("ContentType " + file.getContentType());
-            employeeInf.setImgname(file.getOriginalFilename());
-        }
-        return this.employService.addEmploy(employeeInf);
+
+        return this.employService.addEmploy(file, employeeInf);
     }
 }

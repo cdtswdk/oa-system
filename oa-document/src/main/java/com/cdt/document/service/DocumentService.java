@@ -19,7 +19,7 @@ public interface DocumentService {
 
     DataResult<DocumentInf> deleteDocumentById(Integer id);
 
-    DataResult<DocumentInf> editDocument(DocumentInf DocumentInf);
+    DataResult<DocumentInf> editDocument(HttpServletRequest request, MultipartFile file, DocumentInf DocumentInf);
 
     DataResult<DocumentInf> addDocument(HttpServletRequest request, MultipartFile file);
 }

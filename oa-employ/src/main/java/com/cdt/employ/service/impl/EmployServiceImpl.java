@@ -10,9 +10,12 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
+import java.io.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Auther: chendongtao
@@ -84,8 +87,15 @@ public class EmployServiceImpl implements EmployService {
     @Override
     public DataResult<EmployeeInf> deleteEmployById(Integer id) {
         try {
+            EmployeeInf employeeInf = this.employMapper.selectByPrimaryKey(id);
+            String imgName = employeeInf.getImgname();
+            // 1、删除数据
             int count = this.employMapper.deleteByPrimaryKey(id);
-            if (count > 0) {
+            //2、删除文件
+            String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+            File file = new File(path + File.separator + imgName);
+            boolean del = file.delete();
+            if (count > 0 && del) {
                 return DataResult.success(null, "删除成功");
             }
         } catch (Exception e) {
@@ -95,11 +105,27 @@ public class EmployServiceImpl implements EmployService {
     }
 
     @Override
-    public DataResult<EmployeeInf> editEmploy(EmployeeInf employeeInf) {
+    public DataResult<EmployeeInf> editEmploy(MultipartFile file, EmployeeInf employeeInf) {
         try {
-            int count = this.employMapper.updateByPrimaryKeySelective(employeeInf);
-            if (count > 0) {
-                return DataResult.success(null, "修改成功");
+            if (file == null) {
+                int count = this.employMapper.updateByPrimaryKeySelective(employeeInf);
+                if (count > 0) {
+                    return DataResult.success(null, "修改成功");
+                }
+            } else {
+                String preImgName = employeeInf.getImgname();
+                //1、删除原头像文件
+                String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+                File preFile = new File(path + File.separator + preImgName);
+                boolean del = preFile.delete();
+                // 2、上传新头像文件
+                String upload = upload(file);
+                employeeInf.setImgname(upload);
+                // 3、修改数据
+                int count = this.employMapper.updateByPrimaryKeySelective(employeeInf);
+                if (count > 0 && del) {
+                    return DataResult.success(null, "修改成功");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,15 +134,68 @@ public class EmployServiceImpl implements EmployService {
     }
 
     @Override
-    public DataResult<EmployeeInf> addEmploy(EmployeeInf employeeInf) {
+    public DataResult<EmployeeInf> addEmploy(MultipartFile file, EmployeeInf employeeInf) {
         try {
-            int count = this.employMapper.insert(employeeInf);
-            if (count > 0) {
-                return DataResult.success(null, "增加成功");
+            if (file != null) {
+                String imgName = upload(file);
+                employeeInf.setImgname(imgName);
+                int count = this.employMapper.insertSelective(employeeInf);
+                if (count > 0) {
+                    return DataResult.success(employeeInf, "注册成功");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return DataResult.serverError("增加失败");
+    }
+
+    public String upload(MultipartFile file) {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        String newFileName = "";
+        try {
+            // 1、获取文件名
+            String originalFilename = file.getOriginalFilename();
+            if (StringUtils.isBlank(originalFilename)) {
+                return null;
+            }
+            // 2、定义一个文件路径用于存放文件
+            String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+            // 3、获取来自网络端上传的文件，以流的形式来获取 ：输入流
+            bis = new BufferedInputStream(file.getInputStream());
+            // 4、定义字节缓冲数据，用于缓冲输入流的数据
+            byte[] buff = new byte[1024];
+            // 定义一个int变量，用于存放单次读取数据的字节个数
+            int len = 0;
+            // 5、创建文件对象
+            String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+            newFileName = uuid + "-" + originalFilename;
+            File writeFile = new File(path + File.separator + newFileName);
+            // 6、创建输出流，并通过输出流将文件写到硬盘
+            bos = new BufferedOutputStream(new FileOutputStream(writeFile));
+            // 7、进行循环的读写操作
+            while ((len = bis.read(buff)) != -1) {//读取--读取到缓冲字节数组中
+                //写出
+                bos.write(buff, 0, len);
+                //刷新流
+                bos.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 8、关闭流
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return newFileName;
     }
 }

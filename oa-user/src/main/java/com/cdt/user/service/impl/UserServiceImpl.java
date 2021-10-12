@@ -12,10 +12,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Auther: chendongtao
@@ -99,11 +102,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public DataResult<UserInf> userLogout() {
-        return DataResult.success(null, "登出成功");
-    }
-
-    @Override
     public DataResult<UserInf> getPerInf(String loginname) {
         Example example = new Example(UserInf.class);
         Example.Criteria criteria = example.createCriteria();
@@ -114,6 +112,48 @@ public class UserServiceImpl implements UserService {
             return DataResult.success(userInfList.get(0), "查询成功");
         }
         return DataResult.notfound("查询失败");
+    }
+
+    @Override
+    public DataResult<List<UserInf>> getUserList() {
+        try {
+            List<UserInf> userInfList = this.userMapper.selectAll();
+            return DataResult.success(userInfList, "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
+    }
+
+    @Override
+    public DataResult<PageResult<UserInf>> getUserListByPage(DatatableInfo<UserInf> datatableInfo, String searchType, String searchInput) {
+        try {
+            Example example = new Example(UserInf.class);
+            Example.Criteria criteria = example.createCriteria();
+            if (StringUtils.isNotEmpty(searchInput)) {
+                if (StringUtils.isNotEmpty(searchType)) {
+                    if ("1".equals(searchType)) {
+                        criteria.andLike("loginname", "%" + searchInput + "%");
+                    } else if ("2".equals(searchType)) {
+                        criteria.andLike("status", "%" + searchInput + "%");
+                    } else if ("3".equals(searchType)) {
+                        criteria.andLike("username", "%" + searchInput + "%");
+                    }
+                }
+            }
+            criteria.andEqualTo("status", 0);
+            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
+            List<UserInf> userInfList = this.userMapper.selectByExample(example);
+            PageResult<UserInf> pageResult = new PageResult<>();
+            pageResult.setItems(userInfList);
+            List<UserInf> userInfList1 = this.userMapper.selectByExample(example);
+            pageResult.setTotal((long) userInfList1.size());
+            pageResult.setTotalPage((int) Math.ceil((double) userInfList1.size() / datatableInfo.getPageSize()));
+            return DataResult.success(pageResult, "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return DataResult.serverError("查询失败");
     }
 
     @Override
@@ -149,11 +189,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public DataResult<UserInf> registerUserInf(UserInf userInf) {
+    public DataResult<UserInf> registerUserInf(MultipartFile file, UserInf userInf) {
         try {
-            userInf.setStatus(0);
-            this.userMapper.insertSelective(userInf);
-            return DataResult.success(userInf, "注册成功");
+            if (file != null) {
+                String imgName = upload(file);
+                userInf.setImgname(imgName);
+                userInf.setStatus(0);
+                int count = this.userMapper.insertSelective(userInf);
+                if (count > 0) {
+                    return DataResult.success(userInf, "注册成功");
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -161,51 +207,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public DataResult<List<UserInf>> getUserList() {
-        try {
-            List<UserInf> userInfList = this.userMapper.selectAll();
-            return DataResult.success(userInfList, "查询成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return DataResult.serverError("查询失败");
-    }
-
-    @Override
-    public DataResult<PageResult<UserInf>> getUserListByPage(DatatableInfo<UserInf> datatableInfo, String searchType, String searchInput) {
-        try {
-            Example example = new Example(UserInf.class);
-            Example.Criteria criteria = example.createCriteria();
-            if (StringUtils.isNotEmpty(searchInput)) {
-                if (StringUtils.isNotEmpty(searchType)) {
-                    if ("1".equals(searchType)) {
-                        criteria.andLike("loginname", "%" + searchInput + "%");
-                    } else if ("2".equals(searchType)) {
-                        criteria.andLike("status", "%" + searchInput + "%");
-                    } else if ("3".equals(searchType)) {
-                        criteria.andLike("username", "%" + searchInput + "%");
-                    }
-                }
-            }
-            PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
-            List<UserInf> userInfList = this.userMapper.selectByExample(example);
-            PageResult<UserInf> pageResult = new PageResult<>();
-            pageResult.setItems(userInfList);
-            List<UserInf> userInfList1 = this.userMapper.selectByExample(example);
-            pageResult.setTotal((long) userInfList1.size());
-            pageResult.setTotalPage((int) Math.ceil((double) userInfList1.size() / datatableInfo.getPageSize()));
-            return DataResult.success(pageResult, "查询成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return DataResult.serverError("查询失败");
-    }
-
-    @Override
     public DataResult<UserInf> deleteUserById(Integer id) {
         try {
+            UserInf userInf = this.userMapper.selectByPrimaryKey(id);
+            String imgName = userInf.getImgname();
+            // 1、删除数据
             int count = this.userMapper.deleteByPrimaryKey(id);
-            if (count > 0) {
+            //2、删除文件
+            String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+            File file = new File(path + File.separator + imgName);
+            boolean del = file.delete();
+            if (count > 0 && del) {
                 return DataResult.success(null, "删除成功");
             }
         } catch (Exception e) {
@@ -215,15 +227,85 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public DataResult<UserInf> editUser(UserInf userInf) {
+    public DataResult<UserInf> editUser(MultipartFile file, UserInf userInf) {
         try {
-            int count = this.userMapper.updateByPrimaryKeySelective(userInf);
-            if (count > 0) {
-                return DataResult.success(null, "修改成功");
+            if (file == null) {
+                int count = this.userMapper.updateByPrimaryKeySelective(userInf);
+                if (count > 0) {
+                    return DataResult.success(null, "修改成功");
+                }
+            } else {
+                String preImgName = userInf.getImgname();
+                //1、删除原头像文件
+                String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+                File preFile = new File(path + File.separator + preImgName);
+                boolean del = preFile.delete();
+                // 2、上传新头像文件
+                String upload = upload(file);
+                userInf.setImgname(upload);
+                // 3、修改数据
+                int count = this.userMapper.updateByPrimaryKeySelective(userInf);
+                if (count > 0 && del) {
+                    return DataResult.success(null, "修改成功");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return DataResult.serverError("修改失败");
+    }
+
+    @Override
+    public DataResult<UserInf> userLogout() {
+        return DataResult.success(null, "登出成功");
+    }
+
+    public String upload(MultipartFile file) {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        String newFileName = "";
+        try {
+            // 1、获取文件名
+            String originalFilename = file.getOriginalFilename();
+            if (StringUtils.isBlank(originalFilename)) {
+                return null;
+            }
+            // 2、定义一个文件路径用于存放文件
+            String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+            // 3、获取来自网络端上传的文件，以流的形式来获取 ：输入流
+            bis = new BufferedInputStream(file.getInputStream());
+            // 4、定义字节缓冲数据，用于缓冲输入流的数据
+            byte[] buff = new byte[1024];
+            // 定义一个int变量，用于存放单次读取数据的字节个数
+            int len = 0;
+            // 5、创建文件对象
+            String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+            newFileName = uuid + "-" + originalFilename;
+            File writeFile = new File(path + File.separator + newFileName);
+            // 6、创建输出流，并通过输出流将文件写到硬盘
+            bos = new BufferedOutputStream(new FileOutputStream(writeFile));
+            // 7、进行循环的读写操作
+            while ((len = bis.read(buff)) != -1) {//读取--读取到缓冲字节数组中
+                //写出
+                bos.write(buff, 0, len);
+                //刷新流
+                bos.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 8、关闭流
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return newFileName;
     }
 }

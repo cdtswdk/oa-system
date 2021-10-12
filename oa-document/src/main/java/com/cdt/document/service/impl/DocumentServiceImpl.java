@@ -67,6 +67,7 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 }
             }
+            example.setOrderByClause(" create_date desc ");
             PageHelper.startPage(datatableInfo.getPage(), datatableInfo.getPageSize());
             List<DocumentInf> DocumentInfs = this.documentMapper.selectByExample(example);
             PageResult<DocumentInf> pageResult = new PageResult<>();
@@ -85,7 +86,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DataResult<DocumentInf> deleteDocumentById(Integer id) {
         try {
             DocumentInf documentInf = this.documentMapper.selectByPrimaryKey(id);
-            String filename = documentInf.getRemark();
+            String filename = documentInf.getFilename();
             //1、删除数据
             int count = this.documentMapper.deleteByPrimaryKey(id);
             //2、删除文件
@@ -102,11 +103,34 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DataResult<DocumentInf> editDocument(DocumentInf DocumentInf) {
+    public DataResult<DocumentInf> editDocument(HttpServletRequest request, MultipartFile file, DocumentInf documentInf) {
         try {
-            int count = this.documentMapper.updateByPrimaryKeySelective(DocumentInf);
-            if (count > 0) {
-                return DataResult.success(null, "修改成功");
+            if (file == null) {
+                int count = this.documentMapper.updateByPrimaryKeySelective(documentInf);
+                if (count > 0) {
+                    return DataResult.success(null, "修改成功");
+                }
+            } else {
+                String preImgName = documentInf.getFilename();
+                //1、删除原头像文件
+                String path = "C:\\Users\\14660\\Pictures\\Camera Roll";
+                File preFile = new File(path + File.separator + preImgName);
+                boolean del = preFile.delete();
+                // 2、上传新头像文件
+                String upload = upload(file);
+                documentInf.setFilename(upload);
+                String originalFilename = file.getOriginalFilename();
+                if (StringUtils.isNotEmpty(originalFilename)) {
+                    documentInf.setRemark(originalFilename);
+                }
+                // 3、设置上传者
+                String uploader = request.getHeader("X-Token");
+                documentInf.setUploader(uploader.substring(uploader.indexOf(",") + 1));
+                // 3、修改数据
+                int count = this.documentMapper.updateByPrimaryKeySelective(documentInf);
+                if (count > 0 && del) {
+                    return DataResult.success(null, "修改成功");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,10 +149,10 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 String originalFilename = file.getOriginalFilename();
                 DocumentInf documentInf = new DocumentInf();
+                documentInf.setFilename(newFileName);
                 if (StringUtils.isNotEmpty(originalFilename)) {
-                    documentInf.setFilename(originalFilename);
+                    documentInf.setRemark(originalFilename);
                 }
-                documentInf.setRemark(newFileName);
                 String uploader = request.getHeader("X-Token");
                 documentInf.setUploader(uploader.substring(uploader.indexOf(",") + 1));
                 int count = this.documentMapper.insertSelective(documentInf);

@@ -78,21 +78,17 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editUser", method = RequestMethod.POST)
-    public DataResult<UserInf> editUser(UserInf userInf) {
-        return this.userService.editUser(userInf);
+    public DataResult<UserInf> editUser(@RequestParam(required = false, name = "file") MultipartFile file,
+                                        @RequestParam(name = "editUser", required = false) String editUser) {
+        UserInf userInf = JSONObject.parseObject(editUser, UserInf.class);
+        return this.userService.editUser(file, userInf);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public DataResult<UserInf> register(@RequestParam(required = false, name = "file") MultipartFile file,
                                         @RequestParam(name = "registerUser", required = false) String registerUser) {
         UserInf userInf = JSONObject.parseObject(registerUser, UserInf.class);
-        if (file != null) {
-            System.out.println("filename " + file.getName());
-            System.out.println("OriginalFilename " + file.getOriginalFilename());
-            System.out.println("ContentType " + file.getContentType());
-            userInf.setImgname(file.getOriginalFilename());
-        }
-        return this.userService.registerUserInf(userInf);
+        return this.userService.registerUserInf(file, userInf);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
