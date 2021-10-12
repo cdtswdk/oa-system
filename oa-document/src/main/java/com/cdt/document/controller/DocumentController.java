@@ -41,7 +41,7 @@ public class DocumentController {
 
     @RequestMapping(value = "/getListByPage", method = RequestMethod.GET)
     public DataResult<PageResult<DocumentInf>> getDocumentListByPage(DatatableInfo<DocumentInf> datatableInfo,
-                                                             String searchType, String searchInput) {
+                                                                     String searchType, String searchInput) {
         return this.documentService.getDocumentListByPage(datatableInfo, searchType, searchInput);
     }
 
@@ -57,6 +57,6 @@ public class DocumentController {
 
     @RequestMapping(value = "/addDocument", method = RequestMethod.POST)
     public DataResult<DocumentInf> addDocument(HttpServletRequest request, @RequestParam(name = "file") MultipartFile file) {
-        return this.documentService.addDocument(request,file);
+        return this.documentService.addDocument(request, file);
     }
 }

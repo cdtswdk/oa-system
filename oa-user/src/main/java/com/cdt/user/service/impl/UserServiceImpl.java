@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             if (password.equals(userInf1.getPassword())) {
                 SingleToken singleToken = new SingleToken();
                 HashMap<String, String> hashMap = new HashMap<>();
-                if ("admin".equals(loginname)) {
+                if (userInf1.getStatus() == 1) {
                     hashMap.put("admin", "admin-token," + loginname);
                 } else {
                     hashMap.put("editor", "editor-token," + loginname);
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
             UserInf userInf = userInfList.get(0);
             SingleToken singleToken = new SingleToken();
             HashMap<String, String> hashMap = new HashMap<>();
-            if ("admin".equals(split[1])) {
+            if (userInf.getStatus() == 1) {
                 hashMap.put("admin", "admin-token");
                 singleToken.setTokenMap(hashMap);
                 singleToken.setRoles(new String[]{"admin"});
